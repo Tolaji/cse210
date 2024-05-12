@@ -1,0 +1,22 @@
++------------------------------------------------+
+|                                                |
+|                   <<class>>                    |
+|                   Fraction                     |
++------------------------------------------------+
+|                <<attributes>>                  |
+| - top (_numerator): int                        |
+| - bottom (_denominator): int                   |
++------------------------------------------------+
+|               <<methods>>                      | 
+| + Fraction()                                   |
+| + Fraction(wholeNumber: int)                   |
+| + Fraction(_numerator: int, _denominator: int) |
+|                                                |
+| + get_Numerator(): int                         |
+| + set_Numerator(_numerator: int): void         |
+| + get_Denominator(): int                       |
+| + set_Denominator(_denominator: int): void     |
+|                                                |
+| + get_FractionString(): String                 |
+| + get_DecimalString(): Double                  |
++------------------------------------------------+
