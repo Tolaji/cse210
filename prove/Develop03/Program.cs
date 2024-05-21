@@ -1,30 +1,24 @@
-// }
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 class Program
 {
+    // Instantiate Random object to be reused
+    private static readonly Random random = new Random();
     static void Main(string[] arg)
     {
-        string reference;
-        ScriptureReference parsedReference = new ScriptureReference("John 3:16");
-        if (parsedReference.EndVerse == null)
-        {
-            reference = $"{parsedReference.Book} {parsedReference.Chapter}:{parsedReference.StartVerse}";
-        }
-        else
-        {
-            reference = $"{parsedReference.Book} {parsedReference.Chapter}:{parsedReference.StartVerse}-{parsedReference.EndVerse}";
-        }
-
-        Scripture scripture = new Scripture(reference, "For God so loved the world, that he gave his only Son, that whoever believes in him should not perish but have eternal life.");
+        // Select a random scripture reference from the file
+        ScriptureReference parsedReference = ScriptureReference.SelectRandomScripture("scriptures.txt");
+        // Assign the formatted reference to the 'reference' variable
+        string reference = parsedReference.GetFormattedReference();
+        Scripture scripture = new Scripture(reference, parsedReference.VerseText);
 
         DisplayScripture(scripture);
 
         do
         {
-
             Console.WriteLine("Press Enter to hide words or type 'quit' to end:");
             string input = Console.ReadLine() ?? "";
 
@@ -34,6 +28,7 @@ class Program
             }
 
             string newString = HideRandomWords(scripture);
+            // Use the 'reference' variable which now has a value assigned
             Scripture scriptureWithUnderscores = new Scripture(reference, newString);
             DisplayScripture(scriptureWithUnderscores);
         } while (!scripture.AllWordsHidden);
@@ -41,16 +36,15 @@ class Program
 
     static void DisplayScripture(Scripture scripture)
     {
-
+        // Console.Clear();
         Console.WriteLine($"{scripture.Reference}  {scripture.Text}");
     }
 
+    
+
     static string HideRandomWords(Scripture scripture)
     {
-        Random random = new Random();
         List<string> wordsToHide = scripture.Words.Where(word => !word.IsHidden).Select(word => word.Text).ToList();
-
-        string newString = "";
 
         if (wordsToHide.Count > 1)
         {
@@ -65,27 +59,32 @@ class Program
             string wordToHide1 = wordsToHide[randomIndex1];
             string wordToHide2 = wordsToHide[randomIndex2];
 
-            // int wordToHideLength = wordToHide1.Length;
-
-
             foreach (Word word in scripture.Words)
             {
                 if (word.Text == wordToHide1 || word.Text == wordToHide2)
                 {
-                    string underscores = ReplaceWithUnderscore(word.Text);
-                    word.Text = underscores;
+                    word.Text = ReplaceWithUnderscore(word.Text);
                     word.Hide();
                 }
-
-                newString += word.Text + " ";
             }
         }
         else
         {
             scripture.HideAllWords();
         }
-        return newString;
+
+        // Reconstruct the scripture text from the Words list
+        return string.Join(" ", scripture.Words.Select(w => w.Text));
     }
+
+    // static string ReplaceWithUnderscore(string word)
+    // {
+    //     // Simplified method using string constructor
+    //     return new string('_', word.Length);
+    // }
+
+    // // ... (rest of the classes remain unchanged)
+
 
     static string ReplaceWithUnderscore(string word)
     {
@@ -132,15 +131,61 @@ class Scripture
 }
 
 class ScriptureReference
+
 {
-    public string Book { get; private set; } = "";
+    public string Book { get; private set; }
     public int Chapter { get; private set; }
     public int? StartVerse { get; private set; }
     public int? EndVerse { get; private set; }
+    public string VerseText { get; private set; }
 
-    public ScriptureReference(string reference)
+    private ScriptureReference(string reference, string verseText)
     {
         ParseReference(reference);
+        VerseText = verseText;
+    }
+
+    public static ScriptureReference SelectRandomScripture(string filePath)
+    {
+        // Create a new Random object for local use within this method
+        Random localRandom = new Random();
+        try
+        {
+            var lines = File.ReadAllLines(filePath);
+            if (lines.Length == 0)
+            {
+                throw new InvalidOperationException("The scripture file is empty.");
+            }
+
+            string randomLine = lines[localRandom.Next(lines.Length)];
+            string[] parts = randomLine.Split('|');
+            if (parts.Length != 2)
+            {
+                throw new FormatException("The scripture file is not in the correct format.");
+            }
+
+            return new ScriptureReference(parts[0], parts[1]);
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions (e.g., file not found, no access, etc.)
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            Environment.Exit(1);
+            return null; // This line will never be reached, but is required to satisfy the compiler.
+        }
+    }
+
+    // Method to get the formatted scripture reference
+    public string GetFormattedReference()
+    {
+        if (EndVerse == null)
+        {
+            return $"{Book} {Chapter}:{StartVerse}";
+        }
+        else
+        {
+            return $"{Book} {Chapter}:{StartVerse}-{EndVerse}";
+        }
     }
 
     private void ParseReference(string reference)
