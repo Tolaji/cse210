@@ -30,35 +30,35 @@
 | +GetAddress(): string     |
 +---------------------------+
 
-+---------------------------+
-|       Product             |
-+---------------------------+
-| -name: string             |
-| -productId: string        |
-| -price: double            |
-| -quantity: int            |
-+---------------------------+
-| +Product(name: string,    |
-        productId: string,  |
-        price: double,      |
-        quantity: int)      |
-| +GetTotalCost(): double   |
-| +GetName(): string        |
-| +GetProductId(): string   |
-+---------------------------+
+        +---------------------------+
+        |       Product             |
+        +---------------------------+
+        | -name: string             |
+        | -productId: string        |
+        | -price: double            |
+        | -quantity: int            |
+        +---------------------------+
+        | +Product(name: string,    |
+                productId: string,  |
+                price: double,      |
+                quantity: int)      |
+        | +GetTotalCost(): double   |
+        | +GetName(): string        |
+        | +GetProductId(): string   |
+        +---------------------------+
 
-            ^
-            |
-            |
-+-------------------------------+
-|        Order                  |
-+-------------------------------+
-| -products: List<Product>      |
-| -customer: Customer           |
-+-------------------------------+
-| +Order(customer: Customer)    |
-| +AddProduct(product: Product) |
-| +CalculateTotalCost(): double |
-| +GetPackingLabel(): string    |
-| +GetShippingLabel(): string   |
-+-------------------------------+
+                        ^
+                        |
+                        |
+        +-------------------------------+
+        |        Order                  |
+        +-------------------------------+
+        | -products: List<Product>      |
+        | -customer: Customer           |
+        +-------------------------------+
+        | +Order(customer: Customer)    |
+        | +AddProduct(product: Product) |
+        | +CalculateTotalCost(): double |
+        | +GetPackingLabel(): string    |
+        | +GetShippingLabel(): string   |
+        +-------------------------------+
